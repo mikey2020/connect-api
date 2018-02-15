@@ -6,11 +6,10 @@ import (
 	. "connect/middlewares"
 )
 
-func SetUserRoutes(router *mux.Router) *mux.Router {
-	baseRouter := mux.NewRouter()
-	userRouter := baseRouter.PathPrefix("/api/v1").Subrouter()
-	userRouter.HandleFunc("/user/signup", LoggingMiddleware(CreateUser)).Methods("POST")
-	userRouter.HandleFunc("/users", LoggingMiddleware(Authenticate(GetAllUsers))).Methods("GET")
-	userRouter.HandleFunc("/user/signin", LoggingMiddleware(SignInUser)).Methods("POST")
+func SetUserRoutes(userRouter *mux.Router) *mux.Router {
+	// baseRouter := mux.NewRouter()
+	userRouter.HandleFunc("/api/v1/user/signup", LoggingMiddleware(CreateUser)).Methods("POST")
+	userRouter.HandleFunc("/api/v1/users", LoggingMiddleware(Authenticate(GetAllUsers))).Methods("GET")
+	userRouter.HandleFunc("/api/v1/user/signin", LoggingMiddleware(SignInUser)).Methods("POST")
     return userRouter
 }

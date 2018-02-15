@@ -34,6 +34,7 @@ func GenerateToken(w http.ResponseWriter, r *http.Request, user User){
 	gotenv.Load()
     _ = json.NewDecoder(r.Body).Decode(&user)
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"_id": user.ID,
         "username": user.Username,
 		"password": user.Password,
 		"email": user.Email,

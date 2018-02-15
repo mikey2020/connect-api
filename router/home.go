@@ -7,8 +7,8 @@ import (
 )
 
 
-func SetIndexRoute(router *mux.Router) *mux.Router{
-	indexRouter := mux.NewRouter()
+func SetIndexRoute(indexRouter *mux.Router) *mux.Router{
+	// indexRouter := mux.NewRouter()
 
 	indexRouter.HandleFunc("/", LoggingMiddleware(Index)).Methods("GET")
 

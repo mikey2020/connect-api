@@ -18,16 +18,15 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	} else {
-
-		_, userErr := dao.Find("username",user.Username)
-		_, emailErr := dao.Find("email",user.Email)
+		_, userErr := dao.FindUser("username",user.Username)
+		_, emailErr := dao.FindUser("email",user.Email)
 		if userErr  == nil || emailErr == nil {
 			RespondWithError(w, 409, "User already exists")
 			return 
 		} else if err,errStatus := ValidateSignUpRequest(user); errStatus != true {
 			user.ID = bson.NewObjectId()
 			user.Password, _ = user.HashPassword(user.Password)
-			if err := dao.Insert(user); err != nil {
+			if err := dao.InsertUser(user); err != nil {
 				RespondWithError(w, http.StatusInternalServerError, err.Error())
 				return
 			}
@@ -42,7 +41,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request){
-	users, err := dao.FindAll()
+	users, err := dao.FindAllUsers()
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -58,8 +57,8 @@ func SignInUser(w http.ResponseWriter, r *http.Request){
 		RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	} else {
-		foundUser, userErr := dao.Find("username", user.Username)
-		_, emailErr := dao.Find("email", user.Email)
+		foundUser, userErr := dao.FindUser("username", user.Username)
+		_, emailErr := dao.FindUser("email", user.Email)
 		if userErr != nil || emailErr != nil {
 			RespondWithError(w, 401, "Invalid Sign in parameters")
 		} else {

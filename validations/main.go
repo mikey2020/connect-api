@@ -51,3 +51,17 @@ func ValidateSignInRequest(user User) (interface{},bool){
 
 	return fallback,false
 }
+
+func ValidateConcept(concept Concept) (interface{},bool){
+	concept.Topic = strings.TrimSpace(concept.Topic)
+	concept.Description = strings.TrimSpace(concept.Description)
+
+	if concept.Topic == "" {
+		return CreateErrorMessage("topic", "Topic is required"), true
+	}
+	if concept.Description == ""{
+		return CreateErrorMessage("description", "Description is required"), true
+	}
+
+	return fallback, false
+}

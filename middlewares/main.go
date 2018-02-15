@@ -36,7 +36,6 @@ func Authenticate(next http.HandlerFunc) http.HandlerFunc {
                     return []byte(os.Getenv("JWT_SECRET")), nil
                 })
                 if error != nil {
-									  fmt.Println(error)
                     RespondWithError(w,401,error.Error())
                     return
                 }

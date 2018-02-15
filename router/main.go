@@ -11,9 +11,11 @@ func InitRoutes() *mux.Router{
 	// Index route
 	router = SetIndexRoute(router)
 	
-    // Routes for the User entity
-	router = SetUserRoutes(router)
+	//Routes for concept entity
+	router = SetConceptRoutes(router)
 
+	// Routes for the User entity
+	router = SetUserRoutes(router)
 	
 	return router
 }
