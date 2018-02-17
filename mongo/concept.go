@@ -49,7 +49,8 @@ func (m *DAO) DeleteConcept(concept Concept) error {
 }
 
 // update a concept in the database
-func (m *DAO) UpdateConcept(concept Concept) error {
-	err := db.C(CONCEPT_COLLECTION).UpdateId(concept.ID, &concept)
+func (m *DAO) UpdateConcept(newConcept Concept, id interface{}) error {
+	concept := bson.M{"$set": newConcept }
+	err := db.C(CONCEPT_COLLECTION).Update(bson.M{"_id": id}, concept)
 	return err
 }

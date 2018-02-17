@@ -30,6 +30,7 @@ type Concept struct {
 	UserId      interface{} `bson:"user_id,omitempty" json:"user_id"`
 	Topic       string        `bson:"topic,omitempty" json:"topic"`
 	Description string        `bson:"description,omitempty" json:"description"`
+	Users       []string         `bson:"users" json:"users"`
 	CreatedAt   time.Time     `bson:"created_at" json:"created_at"`
 	UpdatedAt   time.Time     `bson:"updated_at" json:"updated_at"`
 }
