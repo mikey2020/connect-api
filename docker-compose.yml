@@ -1,0 +1,20 @@
+version: "3"
+services:
+  api:
+    build: .
+    links:
+      - db:mongo
+    volumes:
+      - ./api:/go/src/connect
+    env_file: .env
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+      
+  db:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    command: mongod --smallfiles --quiet --logpath=/dev/null

@@ -1,17 +1,18 @@
 package router
 
 import (
+	mwr "github.com/mikey2020/connect-api/middlewares"
+
+	ctrl "github.com/mikey2020/connect-api/controller"
+
 	"github.com/gorilla/mux"
-	. "connect/controller"
-	. "connect/middlewares"
 )
 
-
-func SetIndexRoute(indexRouter *mux.Router) *mux.Router{
+func setIndexRoute(indexRouter *mux.Router) *mux.Router {
 	// indexRouter := mux.NewRouter()
 
-	indexRouter.HandleFunc("/", LoggingMiddleware(Index)).Methods("GET")
+	indexRouter.HandleFunc("/", mwr.LoggingMiddleware(ctrl.Index)).Methods("GET")
 
-    return indexRouter
+	return indexRouter
 
 }

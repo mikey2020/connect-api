@@ -5,7 +5,6 @@ import "gopkg.in/mgo.v2/bson"
 // define user collection
 const USER_COLLECTION = "Users"
 
-
 // get all users in database
 func (m *DAO) FindAllUsers() ([]User, error) {
 	var users []User
@@ -21,11 +20,11 @@ func (m *DAO) FindUserById(id string) (User, error) {
 }
 
 // get user by any of its atrributes
-func (m *DAO) FindUser(field, value string) (User,error) {
+func (m *DAO) FindUser(field, value string) (User, error) {
 	var user User
-	err := db.C(USER_COLLECTION).Find(bson.M{field: value }).One(&user)
+	err := db.C(USER_COLLECTION).Find(bson.M{field: value}).One(&user)
 
-	return user,err
+	return user, err
 }
 
 // add a new user to the database
@@ -43,5 +42,11 @@ func (m *DAO) DeleteUser(user User) error {
 // update a user in the database
 func (m *DAO) Update(user User) error {
 	err := db.C(USER_COLLECTION).UpdateId(user.ID, &user)
+	return err
+}
+
+//RemoveAllUsers -
+func (m *DAO) RemoveAllUsers() error {
+	err := db.C(USER_COLLECTION).DropCollection()
 	return err
 }

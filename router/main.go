@@ -4,19 +4,19 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func InitRoutes() *mux.Router{
+// InitRoutes function for initialising routes
+func InitRoutes() *mux.Router {
 
 	router := mux.NewRouter().StrictSlash(false)
 
 	// Index route
-	router = SetIndexRoute(router)
-	
+	router = setIndexRoute(router)
+
 	//Routes for concept entity
-	router = SetConceptRoutes(router)
+	router = setConceptRoutes(router)
 
 	// Routes for the User entity
-	router = SetUserRoutes(router)
-	
+	router = setUserRoutes(router)
+
 	return router
 }
-

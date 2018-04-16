@@ -1,25 +1,23 @@
 package main
 
 import (
-	"os"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/mikey2020/connect-api/app"
+
 	"github.com/subosito/gotenv"
-	. "connect/mongo"
-	. "connect/router"
 )
 
-var dao = DAO{}
-
-func init() {
+func main() {
 	gotenv.Load()
-	dao.Server = os.Getenv("Server")
-	dao.Database = os.Getenv("Database")
-	dao.Connect()
-}
-
-func main(){
-	router := InitRoutes()
-	log.Println("Serving listening on port 3000")
-	log.Fatal(http.ListenAndServe(":3000", router))
+	app.SetupConfig(os.Getenv("SERVER"), os.Getenv("DATABASE"))
+	app.Init()
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+	log.Println("Serving listening on port " + port)
+	log.Fatal(http.ListenAndServe(":"+port, app.Router))
 }

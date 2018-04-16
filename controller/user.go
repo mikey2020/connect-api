@@ -1,47 +1,54 @@
 package controller
 
 import (
-	"gopkg.in/mgo.v2/bson"
-	"net/http"
 	"encoding/json"
-	. "connect/mongo"
-	. "connect/helper"
-	. "connect/validations"
+	"net/http"
+
+	. "github.com/mikey2020/connect-api/validations"
+
+	. "github.com/mikey2020/connect-api/mongo"
+
+	. "github.com/mikey2020/connect-api/helper"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
-var dao = DAO{}
-
+// CreateUser -
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var user User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
 	} else {
-		_, userErr := dao.FindUser("username",user.Username)
-		_, emailErr := dao.FindUser("email",user.Email)
-		if userErr  == nil || emailErr == nil {
+		_, userErr := Dao.FindUser("username", user.Username)
+		_, emailErr := Dao.FindUser("email", user.Email)
+		if userErr == nil || emailErr == nil {
 			RespondWithError(w, 409, "User already exists")
-			return 
-		} else if err,errStatus := ValidateSignUpRequest(user); errStatus != true {
+			return
+		} else if err, errStatus := ValidateSignUpRequest(user); errStatus != true {
 			user.ID = bson.NewObjectId()
 			user.Password, _ = user.HashPassword(user.Password)
-			if err := dao.InsertUser(user); err != nil {
+			if err := Dao.InsertUser(user); err != nil {
 				RespondWithError(w, http.StatusInternalServerError, err.Error())
 				return
 			}
 			receipent := []string{user.Email}
-			SendMail(receipent,"Welcome","Welcome to <h2>Connect</h2>")
-			GenerateToken(w, r, user)
+			go SendMail(receipent, "Welcome", "Welcome to <h2>Connect</h2>")
+			token, err := GenerateToken(w, r, user)
+			if err != nil {
+				RespondWithError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			RespondWithSuccess(w, 201, token, "userToken")
 		} else {
-			RespondWithJsonError(w,400,err)
+			RespondWithJsonError(w, 400, err)
 		}
 
 	}
 }
 
-func GetAllUsers(w http.ResponseWriter, r *http.Request){
-	users, err := dao.FindAllUsers()
+func GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := Dao.FindAllUsers()
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -49,24 +56,26 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request){
 	RespondWithJson(w, http.StatusOK, users)
 }
 
-func SignInUser(w http.ResponseWriter, r *http.Request){
+func SignInUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var user User
-	
+
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
 	} else {
-		foundUser, userErr := dao.FindUser("username", user.Username)
-		_, emailErr := dao.FindUser("email", user.Email)
-		if userErr != nil || emailErr != nil {
-			RespondWithError(w, 401, "Invalid Sign in parameters")
+		foundUser, userErr := Dao.FindUser("username", user.Username)
+		// _, emailErr := Dao.FindUser("email", user.Email)
+		if userErr != nil {
+			RespondWithError(w, 401, "Invalid User")
 		} else {
 			if user.CheckPasswordHash(foundUser.Password, user.Password) == true {
-				GenerateToken(w, r, foundUser)
+				token, err := GenerateToken(w, r, foundUser)
+				if err == nil && token != "" {
+					RespondWithSuccess(w, 200, token, "userToken")
+				}
 				return
-			} 
-			RespondWithError(w, 401, "Invalid sign in parameters")
+			}
+			RespondWithError(w, 401, "Invalid Sign in parameters")
 		}
 	}
 

@@ -2,11 +2,16 @@ package controller
 
 import (
 	"net/http"
-	help "connect/helper"
+
+	. "github.com/mikey2020/connect-api/mongo"
+
+	help "github.com/mikey2020/connect-api/helper"
 )
 
-type Controller struct {}
+var Dao = DAO{}
 
-func Index(w http.ResponseWriter, r *http.Request){
+type Controller struct{}
+
+func Index(w http.ResponseWriter, r *http.Request) {
 	help.RespondWithJson(w, 200, "Welcome to connect Api")
 }
